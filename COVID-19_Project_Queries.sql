@@ -1,17 +1,18 @@
 /*
 COVID 19 Data Exploration
 
-Skills used: Joins, CTE's Temp Tables, Windows Functions, Aggregate Functions, Creating Views, Converting Data Types
+Skills used: Joins, CTE's, Temp Tables, Windows Functions, Aggregate Functions, Creating Views, Converting Data Types
 
 Notes: continent IS NULL - shows continents only
-	   continent IS NOT NULL - Shows countries only
-
+       continent IS NOT NULL - Shows countries only
 */
+
+
+USE PortfolioProject
 
 SELECT * FROM dbo.CovidDeaths$
 	WHERE continent IS NULL
-
-USE PortfolioProject
+	
 
 -- Select Data that we are going to be starting with
 
@@ -21,7 +22,9 @@ SELECT location, date, total_cases, new_cases, total_deaths, population
 	ORDER BY 1,2
 
 
--- QUERIES REGARDING COUNTRIES
+---------------------------------------------------------------------------------------------------------------------------------------------------------- 
+
+--QUERIES REGARDING COUNTRIES
 
 
 -- Total Cases vs Total Deaths
@@ -48,6 +51,8 @@ SELECT location, population, MAX(total_cases) AS HighestInfectionCount, MAX((tot
 	GROUP BY location, population
 	ORDER BY PercentPopulationInfected DESC
 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 -- BREAKING THINGS DOWN BY CONTINENT
 
@@ -83,6 +88,7 @@ SELECT location, population, MAX(total_cases) AS HighestInfectionCount, MAX((tot
 	GROUP BY location, population
 	ORDER BY HighestCovidCasePercentage DESC
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 -- GLOBAL NUMBERS
 
@@ -137,9 +143,10 @@ SELECT *, ROUND((RollingVaccinationCount/population)*100,8)
 	FROM #PercentPopulationVaccinated
 	ORDER BY location, date
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
 
--- Queries that are going to be used for visualization
+-- QUERIES THAT ARE GOING TO BE USED FOR VISUALIZATION 
 
 --1. TOTAL CASES VS TOTAL DEATHS + DEATH PERCENTAGE
 
@@ -173,8 +180,9 @@ SELECT location, date, population, MAX(total_cases) AS HighestInfectionCount, MA
 	GROUP BY location, population, date
 	ORDER BY PercentPopulationInfected DESC
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
--- Creating View to store data for later visualizations
+-- CREATING VIEWS TO STORE DATA FOR LATER VISUALIZATIONS
 
 CREATE VIEW PercentPopulationVaccinated AS
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(CONVERT(BIGINT,vac.new_vaccinations)) OVER (PARTITION BY dea.location ORDER BY dea.date) AS RollingVaccinationCount 
